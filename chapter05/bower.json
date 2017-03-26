@@ -1,0 +1,30 @@
+{
+  "name": "purescript-book-chapter5",
+  "homepage": "https://github.com/Cmdv/learning-purescript",
+  "authors": [
+    "Cmdv <vincent@cmdv.org>"
+  ],
+  "description": "Chapter 5 - Pattern Matching",
+  "main": "",
+  "keywords": [
+    "purescript"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "purescript-arrays": "^3.0.0",
+    "purescript-foldable-traversable": "^2.0.0",
+    "purescript-math": "^2.0.0",
+    "purescript-globals": "^2.0.0",
+    "purescript-maybe": "^2.0.1"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^2.0.0"
+  }
+}
