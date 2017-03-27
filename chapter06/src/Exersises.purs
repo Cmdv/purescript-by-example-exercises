@@ -15,9 +15,14 @@ instance showComplex :: Show Complex where
 instance eqComplex :: Eq Complex where
   eq (Complex l) (Complex r) = l.real == r.real && l.imaginary == r.imaginary
 
--- 2
+-- 6.7
+-- 1
 data NonEmpty a = NonEmpty a (Array a)
 
+instance eqNonEmpty :: (Eq a) => Eq (NonEmpty a) where
+    eq (NonEmpty a arr) (NonEmpty a' arr') = a == a' && arr == arr'
+
+-- 2
 instance semigroupNonEmpty :: Semigroup (NonEmpty a) where
    append (NonEmpty a arr) (NonEmpty b arr') = NonEmpty a (append arr (append [b] arr'))
 
@@ -26,18 +31,6 @@ instance functorNonEmpty :: Functor NonEmpty where
   map f (NonEmpty a arr) = NonEmpty (f a) (map f arr)
 
 -- 4
-instance foldNonEmpty :: Foldable NonEmpty where
-  foldr f acc (NonEmpty a arr) = foldr f acc (cons a arr)
-  foldl f acc (NonEmpty a arr) = foldl f acc (cons a arr)
-  foldMap f (NonEmpty a arr) = append (f a) (foldMap f arr)
-
-
--- 6.7
--- 1
-instance eqNonEmpty :: (Eq a) => Eq (NonEmpty a) where
-    eq (NonEmpty a arr) (NonEmpty a' arr') = a == a' && arr == arr'
-
---2
 data Extended a = Finite a | Infinite
 
 instance eqExtended :: (Eq a) => Eq (Extended a) where
@@ -51,14 +44,19 @@ instance ordExtended ::  (Ord a) => Ord (Extended a) where
   compare _ Infinite = LT
   compare (Finite a) (Finite a') = compare a a'
 
--- 3
+-- 5
+instance foldNonEmpty :: Foldable NonEmpty where
+  foldr f acc (NonEmpty a arr) = foldr f acc (cons a arr)
+  foldl f acc (NonEmpty a arr) = foldl f acc (cons a arr)
+  foldMap f (NonEmpty a arr) = append (f a) (foldMap f arr)
+
+-- 6
 data OneMore f a = OneMore a (f a)
 
 instance foldableOneMore :: Foldable f => Foldable (OneMore f) where
   foldr f acc (OneMore a rest) = f a (foldr f acc rest)
   foldl f acc (OneMore a rest) = foldl f (f acc a) rest
   foldMap f (OneMore a rest) = append (f a) (foldMap f rest)
-
 
 -- 6.10
 -- 1/2
