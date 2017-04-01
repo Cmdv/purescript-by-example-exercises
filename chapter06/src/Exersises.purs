@@ -20,51 +20,51 @@ instance eqComplex :: Eq Complex where
 data NonEmpty a = NonEmpty a (Array a)
 
 instance eqNonEmpty :: (Eq a) => Eq (NonEmpty a) where
-    eq (NonEmpty a arr) (NonEmpty a' arr') = a == a' && arr == arr'
+    eq (NonEmpty x xs) (NonEmpty y ys) = x == y && xs == ys
 
 -- 2
 instance semigroupNonEmpty :: Semigroup (NonEmpty a) where
-   append (NonEmpty a arr) (NonEmpty b arr') = NonEmpty a (append arr (append [b] arr'))
+   append (NonEmpty x xs) (NonEmpty y ys) = NonEmpty x (xs <> [y] <> ys)
 
 -- 3
 instance functorNonEmpty :: Functor NonEmpty where
-  map f (NonEmpty a arr) = NonEmpty (f a) (map f arr)
+  map f (NonEmpty x xs) = NonEmpty (f x) (map f xs)
 
 -- 4
 data Extended a = Finite a | Infinite
 
 instance eqExtended :: (Eq a) => Eq (Extended a) where
   eq Infinite Infinite = true
-  eq (Finite a) (Finite a') = a == a'
+  eq (Finite x) (Finite y) = x == y
   eq _ _ = false
 
 instance ordExtended ::  (Ord a) => Ord (Extended a) where
   compare Infinite Infinite = EQ
   compare Infinite _ = GT
   compare _ Infinite = LT
-  compare (Finite a) (Finite a') = compare a a'
+  compare (Finite x) (Finite y) = compare x y
 
 -- 5
 instance foldNonEmpty :: Foldable NonEmpty where
-  foldr f acc (NonEmpty a arr) = foldr f acc (cons a arr)
-  foldl f acc (NonEmpty a arr) = foldl f acc (cons a arr)
-  foldMap f (NonEmpty a arr) = append (f a) (foldMap f arr)
+  foldr f acc (NonEmpty x xs) = foldr f acc (cons x xs)
+  foldl f acc (NonEmpty x xs) = foldl f acc (cons x xs)
+  foldMap f (NonEmpty x xs) = append (f x) (foldMap f xs)
 
 -- 6
 data OneMore f a = OneMore a (f a)
 
 instance foldableOneMore :: Foldable f => Foldable (OneMore f) where
-  foldr f acc (OneMore a rest) = f a (foldr f acc rest)
-  foldl f acc (OneMore a rest) = foldl f (f acc a) rest
-  foldMap f (OneMore a rest) = append (f a) (foldMap f rest)
+  foldr f acc (OneMore x xs) = f x (foldr f acc xs)
+  foldl f acc (OneMore x xs) = foldl f (f acc x) xs
+  foldMap f (OneMore x xs) = append (f x) (foldMap f xs)
 
--- 6.10
+-- 6.11
 -- 1/2
 class Monoid m <= Action m a where
     act :: m -> a -> a
 
 instance arrayAction :: Action m a => Action m (Array a) where
-  act m array = map (act m) array
+  act m xs = map (act m) xs
 
 -- 3
 newtype Self m = Self m
