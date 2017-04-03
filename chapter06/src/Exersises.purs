@@ -2,7 +2,8 @@ module Chapter6 where
 
 import Prelude
 import Data.Array (cons)
-import Data.Foldable (class Foldable, foldMap, foldl, foldr)
+import Data.Foldable (class Foldable, foldMap, foldl, foldr, maximum)
+import Data.Maybe (fromJust, fromMaybe)
 import Data.Monoid (class Monoid)
 
 -- 6.4
@@ -70,8 +71,13 @@ instance arrayAction :: Action m a => Action m (Array a) where
 newtype Self m = Self m
 
 instance selfAppend :: Action m a => Action m (Self m) where
-  act m (Self x) = Self (m <> x)
+  act _ (Self x) = Self (x <> x)
 
 -- 4
+myMax :: Partial => Array Int -> Int
+myMax x = fromJust (maximum x)
 
-
+-- making sure it returns a value
+-- myMax' (NonEmpty 1 []) == 1
+myMax' :: NonEmpty Int -> Int
+myMax' (NonEmpty x xs) = fromMaybe x $ maximum xs
