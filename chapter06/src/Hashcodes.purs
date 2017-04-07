@@ -1,7 +1,8 @@
 module Hashcodes where
 
 import Prelude
-
+import Data.NonEmpty as NE
+import Data.Array (filter, group', length, nubBy, null)
 import Data.Char (toCharCode)
 import Data.Either (Either(..))
 import Data.Foldable (foldl)
@@ -9,7 +10,6 @@ import Data.Function (on)
 import Data.Maybe (Maybe(..))
 import Data.String (toCharArray)
 import Data.Tuple (Tuple(..))
-import Data.Array (nubBy, length)
 
 newtype HashCode = HashCode Int
 
@@ -23,6 +23,8 @@ instance showHashCode :: Show HashCode where
   show (HashCode h) = "(HashCode " <> show h <> ")"
 
 derive instance eqHashCode :: Eq HashCode
+
+derive instance ordHashCode :: Ord HashCode
 
 combineHashes :: HashCode -> HashCode -> HashCode
 combineHashes (HashCode h1) (HashCode h2) = hashCode (73 * h1 + 51 * h2)
@@ -59,5 +61,26 @@ instance hashEither :: (Hashable a, Hashable b) => Hashable (Either a b) where
 
 -- 6.12
 -- 2
+
 hashDuplicates :: forall a. (Hashable a) => Array a -> Boolean
 hashDuplicates a = length a /= length (nubBy hashEqual a)
+
+-- just a bit of fun with adding Maybe type
+-- hashDuplicates :: forall a. (Hashable a) => Array a -> Maybe (Array HashCode)
+-- hashDuplicates a = if null hashish then Nothing else Just (map NE.head hashish)
+--   where
+--     hashish = filter (not <<< null <<< NE.tail) <<< group <<< sort $ map hash a
+-- group' == group <<< sort
+
+hashDuplicates' :: forall a. (Hashable a) => Array a -> Maybe (Array HashCode)
+hashDuplicates' a = if null hashish then Nothing else Just (map NE.head hashish)
+  where
+    hashish = a
+      # map hash
+      # group'
+      # filter (\x -> x # NE.tail # null # not)
+
+newtype Hour = Hour Int
+
+instance eqHour :: Eq Hour where
+  eq (Hour n) (Hour m) = mod n 12 == mod m 12
